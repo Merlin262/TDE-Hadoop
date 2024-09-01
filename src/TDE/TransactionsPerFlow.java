@@ -18,9 +18,17 @@ public class TransactionsPerFlow {
     public static class FlowMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
         private final static IntWritable one = new IntWritable(1);
         private Text flow = new Text();
+        private boolean isHeader = true;
 
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String[] fields = value.toString().split(";");
+
+            // Verifica se a linha é o cabeçalho (primeira linha) e pula ela
+            if (isHeader) {
+                isHeader = false;
+                return;
+            }
+
             if (fields.length == 10) {
                 flow.set(fields[4]);  // Campo que contém o fluxo (quinta coluna)
                 context.write(flow, one);

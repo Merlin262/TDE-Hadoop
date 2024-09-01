@@ -53,8 +53,17 @@ public class MinMaxTransactionInBrazil2016 {
 
         @Override
         protected void cleanup(Context context) throws IOException, InterruptedException {
-            context.write(new Text("Min Transaction"), minTransaction);
-            context.write(new Text("Max Transaction"), maxTransaction);
+            context.write(new Text("Min Transaction"), formatTransaction(minTransaction.toString(), minPrice));
+            context.write(new Text("Max Transaction"), formatTransaction(maxTransaction.toString(), maxPrice));
+        }
+
+        private Text formatTransaction(String transaction, double price) {
+            String[] fields = transaction.split(";");
+            String formatted = String.format(
+                    "Country: %s, Year: %s, Commodity Code: %s, Commodity: %s, Flow: %s, Price: $%.2f, Weight: %s, Unit: %s, Amount: %s, Category: %s",
+                    fields[0], fields[1], fields[2], fields[3], fields[4], price, fields[6], fields[7], fields[8], fields[9]
+            );
+            return new Text(formatted);
         }
     }
 }

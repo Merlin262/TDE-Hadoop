@@ -184,6 +184,32 @@ public class TDE2 {
         FileOutputFormat.setOutputPath(jobMinMax, outputMinMaxTransactionInBrazil2016);
 
         // Lança o job e aguarda sua execução
-        System.exit(jobMinMax.waitForCompletion(true) ? 0 : 1);
+        if (!jobMinMax.waitForCompletion(true)) {
+            System.exit(1);
+        }
+
+        // Caminho de saída para valor médio das exportações por ano no Brasil
+        Path outputAverageExportValuePerYear = new Path("output/average_export_value_per_year");
+
+        // Configuração do Job para valor médio das exportações por ano no Brasil
+        Job jobAverageExportValue = Job.getInstance(c, "Average Export Value Per Year");
+
+        // Registro das classes
+        jobAverageExportValue.setJarByClass(AverageExportValuePerYear.class);
+        jobAverageExportValue.setMapperClass(AverageExportValuePerYear.ExportMapper.class);
+        jobAverageExportValue.setReducerClass(AverageExportValuePerYear.AverageReducer.class);
+
+        // Definição dos tipos de saída
+        jobAverageExportValue.setMapOutputKeyClass(Text.class);
+        jobAverageExportValue.setMapOutputValueClass(DoubleWritable.class);
+        jobAverageExportValue.setOutputKeyClass(Text.class);
+        jobAverageExportValue.setOutputValueClass(DoubleWritable.class);
+
+        // Cadastro dos arquivos de entrada e saída
+        FileInputFormat.addInputPath(jobAverageExportValue, input);
+        FileOutputFormat.setOutputPath(jobAverageExportValue, outputAverageExportValuePerYear);
+
+        // Lança o job e aguarda sua execução
+        System.exit(jobAverageExportValue.waitForCompletion(true) ? 0 : 1);
     }
 }
