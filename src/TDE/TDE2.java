@@ -32,7 +32,7 @@ public class TDE2 {
         String[] files = new GenericOptionsParser(c, args).getRemainingArgs();
 
         // Caminho de entrada e saída no HDFS
-        Path input = new Path("C:/work/Hadoop/Hadoop/in/operacoes_comerciais_inteira.csv");
+        Path input = new Path("C:/Users/A499216/Desktop/teste/TDE-Hadoop/in/operacoes_comerciais_inteira.csv");
         Path outputBrazilTransaction = new Path("output/brasil_transaction_count");
 
         // Configuração do Job para contagem de transações no Brasil
