@@ -29,8 +29,8 @@ public class TransactionsPerFlow {
                 return;
             }
 
-            if (fields.length == 10) {
-                flow.set(fields[4]);  // Campo que contém o fluxo (quinta coluna)
+            if (fields.length == 10) { //tratativa para dados faltantes
+                flow.set(fields[4]);  // Campo que contém o fluxo
                 context.write(flow, one);
             }
         }

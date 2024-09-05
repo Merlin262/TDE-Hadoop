@@ -1,5 +1,6 @@
 package TDE;
 
+import TDE.CustomWritable.CountryYearWritable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
@@ -210,6 +211,34 @@ public class TDE2 {
         FileOutputFormat.setOutputPath(jobAverageExportValue, outputAverageExportValuePerYear);
 
         // Lança o job e aguarda sua execução
-        System.exit(jobAverageExportValue.waitForCompletion(true) ? 0 : 1);
+        //System.exit(jobAverageExportValue.waitForCompletion(true) ? 0 : 1);
+        if (!jobAverageExportValue.waitForCompletion(true)) {
+            System.exit(1);
+        }
+
+
+        Path outputMinMaxTransactionByYearCountry = new Path("output/min_max_transaction_by_year_country");
+
+        // Configuração do Job para transações mínimas e máximas por ano e país
+
+        Job j = new Job(c, "Max Min Transaction per Country and Year");
+
+        // Registro das classes
+        j.setJarByClass(MinMaxTransactionByYearCountry.class);
+        j.setMapperClass(MinMaxTransactionByYearCountry.TransactionMapper.class);
+        j.setReducerClass(MinMaxTransactionByYearCountry.TransactionReducer.class);
+
+        // Definição dos tipos de saída
+        j.setMapOutputKeyClass(CountryYearWritable.class);
+        j.setMapOutputValueClass(DoubleWritable.class);
+        j.setOutputKeyClass(CountryYearWritable.class);
+        j.setOutputValueClass(Text.class);
+
+        // Cadastro dos arquivos de entrada e saída
+        FileInputFormat.addInputPath(j, input);
+        FileOutputFormat.setOutputPath(j, outputMinMaxTransactionByYearCountry);
+
+        // Lança o job e aguarda sua execução
+        System.exit(j.waitForCompletion(true) ? 0 : 1);
     }
 }
