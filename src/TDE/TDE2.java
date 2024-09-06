@@ -1,26 +1,17 @@
 package TDE;
 
 import TDE.CustomWritable.CountryYearWritable;
+import TDE.CustomWritable.TransactionAverageWritable;
+//import TDE.Teste.BrazilAverageTransaction;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.util.GenericOptionsParser;
 import org.apache.log4j.BasicConfigurator;
-import java.io.IOException;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.util.GenericOptionsParser;
-import org.apache.log4j.BasicConfigurator;
 
 public class TDE2 {
 
@@ -33,16 +24,16 @@ public class TDE2 {
         String[] files = new GenericOptionsParser(c, args).getRemainingArgs();
 
         // Caminho de entrada e saída no HDFS
-        Path input = new Path("C:/Users/A499216/Desktop/teste/TDE-Hadoop/in/operacoes_comerciais_inteira.csv");
+        Path input = new Path("");
         Path outputBrazilTransaction = new Path("output/brasil_transaction_count");
 
         // Configuração do Job para contagem de transações no Brasil
         Job jobBrazil = Job.getInstance(c, "Brazil Transaction Count");
 
         // Registro das classes
-        jobBrazil.setJarByClass(BrazilTransactionCount.class);
-        jobBrazil.setMapperClass(BrazilTransactionCount.BrazilTransactionMapper.class);
-        jobBrazil.setReducerClass(BrazilTransactionCount.BrazilTransactionReducer.class);
+        jobBrazil.setJarByClass(Exe1_BrazilTransactionCount.class);
+        jobBrazil.setMapperClass(Exe1_BrazilTransactionCount.BrazilTransactionMapper.class);
+        jobBrazil.setReducerClass(Exe1_BrazilTransactionCount.BrazilTransactionReducer.class);
 
         // Definição dos tipos de saída
         jobBrazil.setMapOutputKeyClass(Text.class);
@@ -66,9 +57,9 @@ public class TDE2 {
         Job jobPerYear = Job.getInstance(c, "Transactions Per Year");
 
         // Registro das classes
-        jobPerYear.setJarByClass(TransactionPerYear.class);
-        jobPerYear.setMapperClass(TransactionPerYear.TransactionPerYearMapper.class);
-        jobPerYear.setReducerClass(TransactionPerYear.YearReducer.class);
+        jobPerYear.setJarByClass(Exe2_TransactionPerYear.class);
+        jobPerYear.setMapperClass(Exe2_TransactionPerYear.TransactionPerYearMapper.class);
+        jobPerYear.setReducerClass(Exe2_TransactionPerYear.YearReducer.class);
 
         // Definição dos tipos de saída
         jobPerYear.setMapOutputKeyClass(Text.class);
@@ -92,9 +83,9 @@ public class TDE2 {
         Job jobPerCategory = Job.getInstance(c, "Transactions Per Category");
 
         // Registro das classes
-        jobPerCategory.setJarByClass(TransactionsPerCategory.class);
-        jobPerCategory.setMapperClass(TransactionsPerCategory.CategoryMapper.class);
-        jobPerCategory.setReducerClass(TransactionsPerCategory.CategoryReducer.class);
+        jobPerCategory.setJarByClass(Exe3_TransactionsPerCategory.class);
+        jobPerCategory.setMapperClass(Exe3_TransactionsPerCategory.CategoryMapper.class);
+        jobPerCategory.setReducerClass(Exe3_TransactionsPerCategory.CategoryReducer.class);
 
         // Definição dos tipos de saída
         jobPerCategory.setMapOutputKeyClass(Text.class);
@@ -118,9 +109,9 @@ public class TDE2 {
         Job jobPerFlow = Job.getInstance(c, "Transactions Per Flow");
 
         // Registro das classes
-        jobPerFlow.setJarByClass(TransactionsPerFlow.class);
-        jobPerFlow.setMapperClass(TransactionsPerFlow.FlowMapper.class);
-        jobPerFlow.setReducerClass(TransactionsPerFlow.FlowReducer.class);
+        jobPerFlow.setJarByClass(Exe4_TransactionsPerFlow.class);
+        jobPerFlow.setMapperClass(Exe4_TransactionsPerFlow.FlowMapper.class);
+        jobPerFlow.setReducerClass(Exe4_TransactionsPerFlow.FlowReducer.class);
 
         // Definição dos tipos de saída
         jobPerFlow.setMapOutputKeyClass(Text.class);
@@ -141,25 +132,22 @@ public class TDE2 {
         Path outputAverageTransactionValuePerYearInBrazil = new Path("output/average_transaction_value_per_year_in_brazil");
 
         // Configuração do Job para valor médio das transações por ano no Brasil
-        Job jobAverageValue = Job.getInstance(c, "Average Transaction Value Per Year In Brazil");
 
-        // Registro das classes
-        jobAverageValue.setJarByClass(AverageTransactionValuePerYearInBrazil.class);
-        jobAverageValue.setMapperClass(AverageTransactionValuePerYearInBrazil.BrazilMapper.class);
-        jobAverageValue.setReducerClass(AverageTransactionValuePerYearInBrazil.BrazilReducer.class);
+        Job AverageBrasilTransactionJob = new Job(c, "AverageBrasilTransaction");
 
-        // Definição dos tipos de saída
-        jobAverageValue.setMapOutputKeyClass(Text.class);
-        jobAverageValue.setMapOutputValueClass(DoubleWritable.class);
-        jobAverageValue.setOutputKeyClass(Text.class);
-        jobAverageValue.setOutputValueClass(DoubleWritable.class);
+        AverageBrasilTransactionJob.setJarByClass(EXE5_AverageTransactionValuePerYearInBrazil.class);
+        AverageBrasilTransactionJob.setMapperClass(EXE5_AverageTransactionValuePerYearInBrazil.AverageTransactionMapper.class);
+        AverageBrasilTransactionJob.setReducerClass(EXE5_AverageTransactionValuePerYearInBrazil.AverageTransactionReducer.class);
 
-        // Cadastro dos arquivos de entrada e saída
-        FileInputFormat.addInputPath(jobAverageValue, input);
-        FileOutputFormat.setOutputPath(jobAverageValue, outputAverageTransactionValuePerYearInBrazil);
+        AverageBrasilTransactionJob.setMapOutputKeyClass(Text.class);
+        AverageBrasilTransactionJob.setMapOutputValueClass(TransactionAverageWritable.class);
+        AverageBrasilTransactionJob.setOutputKeyClass(Text.class);
+        AverageBrasilTransactionJob.setOutputValueClass(FloatWritable.class);
 
-        // Lança o job e aguarda sua execução
-        if (!jobAverageValue.waitForCompletion(true)) {
+        FileInputFormat.addInputPath(AverageBrasilTransactionJob, input);
+        FileOutputFormat.setOutputPath(AverageBrasilTransactionJob, outputAverageTransactionValuePerYearInBrazil);
+
+        if (!AverageBrasilTransactionJob.waitForCompletion(true)) {
             System.exit(1);
         }
 
@@ -170,9 +158,9 @@ public class TDE2 {
         Job jobMinMax = Job.getInstance(c, "Min Max Transaction In Brazil 2016");
 
         // Registro das classes
-        jobMinMax.setJarByClass(MinMaxTransactionInBrazil2016.class);
-        jobMinMax.setMapperClass(MinMaxTransactionInBrazil2016.Brazil2016Mapper.class);
-        jobMinMax.setReducerClass(MinMaxTransactionInBrazil2016.MinMaxReducer.class);
+        jobMinMax.setJarByClass(Exe6_MinMaxTransactionInBrazil2016.class);
+        jobMinMax.setMapperClass(Exe6_MinMaxTransactionInBrazil2016.Brazil2016Mapper.class);
+        jobMinMax.setReducerClass(Exe6_MinMaxTransactionInBrazil2016.MinMaxReducer.class);
 
         // Definição dos tipos de saída
         jobMinMax.setMapOutputKeyClass(Text.class);
@@ -196,15 +184,15 @@ public class TDE2 {
         Job jobAverageExportValue = Job.getInstance(c, "Average Export Value Per Year");
 
         // Registro das classes
-        jobAverageExportValue.setJarByClass(AverageExportValuePerYear.class);
-        jobAverageExportValue.setMapperClass(AverageExportValuePerYear.ExportMapper.class);
-        jobAverageExportValue.setReducerClass(AverageExportValuePerYear.AverageReducer.class);
+        jobAverageExportValue.setJarByClass(Exe7_AverageExportValuePerYear.class);
+        jobAverageExportValue.setMapperClass(Exe7_AverageExportValuePerYear.ExportMapper.class);
+        jobAverageExportValue.setReducerClass(Exe7_AverageExportValuePerYear.AverageReducer.class);
 
         // Definição dos tipos de saída
         jobAverageExportValue.setMapOutputKeyClass(Text.class);
-        jobAverageExportValue.setMapOutputValueClass(DoubleWritable.class);
+        jobAverageExportValue.setMapOutputValueClass(TransactionAverageWritable.class);
         jobAverageExportValue.setOutputKeyClass(Text.class);
-        jobAverageExportValue.setOutputValueClass(DoubleWritable.class);
+        jobAverageExportValue.setOutputValueClass(FloatWritable.class);
 
         // Cadastro dos arquivos de entrada e saída
         FileInputFormat.addInputPath(jobAverageExportValue, input);
@@ -224,9 +212,9 @@ public class TDE2 {
         Job j = new Job(c, "Max Min Transaction per Country and Year");
 
         // Registro das classes
-        j.setJarByClass(MinMaxTransactionByYearCountry.class);
-        j.setMapperClass(MinMaxTransactionByYearCountry.TransactionMapper.class);
-        j.setReducerClass(MinMaxTransactionByYearCountry.TransactionReducer.class);
+        j.setJarByClass(Exe8_MinMaxTransactionByYearCountry.class);
+        j.setMapperClass(Exe8_MinMaxTransactionByYearCountry.TransactionMapper.class);
+        j.setReducerClass(Exe8_MinMaxTransactionByYearCountry.TransactionReducer.class);
 
         // Definição dos tipos de saída
         j.setMapOutputKeyClass(CountryYearWritable.class);
