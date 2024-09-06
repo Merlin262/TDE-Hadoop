@@ -28,7 +28,6 @@ public class Exe1_BrazilTransactionCount {
             }
         }
     }
-
     public static class BrazilTransactionReducer
             extends Reducer<Text, IntWritable, Text, IntWritable> {
 
@@ -43,3 +42,4 @@ public class Exe1_BrazilTransactionCount {
         }
     }
 }
+

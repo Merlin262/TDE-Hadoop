@@ -26,7 +26,9 @@ public class EXE5_AverageTransactionValuePerYearInBrazil {
 
             if (fields.length > 0 && target.equals(fields[0]) && !fields[5].isEmpty()) {  // Filtrar pelo Brasil
                 float price = Float.parseFloat(fields[5]);  // Campo que contém o preço (sexta coluna)
-                context.write(new Text(fields[1]), new TransactionAverageWritable(price, 1));  // Usar o ano como chave
+                Text year = new Text(fields[1]);
+                context.write(year, new TransactionAverageWritable(price, 1));  // Usar o ano como chave
+
             }
         }
     }

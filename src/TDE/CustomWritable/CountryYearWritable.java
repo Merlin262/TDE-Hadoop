@@ -6,6 +6,7 @@ import org.apache.hadoop.io.WritableUtils;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Objects;
 
 public class CountryYearWritable implements WritableComparable<CountryYearWritable> {
     private String country;
@@ -36,31 +37,31 @@ public class CountryYearWritable implements WritableComparable<CountryYearWritab
 
     @Override
     public void write(DataOutput out) throws IOException {
-        WritableUtils.writeString(out, country);
-        WritableUtils.writeString(out, year);
+        out.writeUTF(String.valueOf(country));
+        out.writeUTF(String.valueOf(year));
     }
 
     @Override
     public void readFields(DataInput in) throws IOException {
-        country = WritableUtils.readString(in);
-        year = WritableUtils.readString(in);
+       country = in.readUTF();
+       year = in.readUTF();
     }
 
     @Override
     public int compareTo(CountryYearWritable o) {
-        int cmp = country.compareTo(o.country);
-        if (cmp != 0) {
-            return cmp;
+        if(this.hashCode() < o.hashCode()) {
+            return -1;
+        }else if(this.hashCode() > o.hashCode()){
+            return 1;
         }
-        return year.compareTo(o.year);
+        return 0;
     }
-
     @Override
     public int hashCode() {
-        return country.hashCode() * 163 + year.hashCode();
+        return Objects.hash(country, year);
     }
 
-    @Override
+@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

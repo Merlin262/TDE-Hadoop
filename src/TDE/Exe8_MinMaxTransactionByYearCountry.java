@@ -1,6 +1,8 @@
 package TDE;
 
 import TDE.CustomWritable.CountryYearWritable;
+import TDE.CustomWritable.PriceAmountWritable;
+import TDE.CustomWritable.TransactionAverageWritable;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -11,52 +13,48 @@ import java.io.IOException;
 
 public class Exe8_MinMaxTransactionByYearCountry {
 
-    public static class TransactionMapper extends Mapper<LongWritable, Text, CountryYearWritable, DoubleWritable> {
+    public static class TransactionMapper extends Mapper<LongWritable, Text, CountryYearWritable, PriceAmountWritable> {
         private CountryYearWritable countryYear = new CountryYearWritable();
-        private DoubleWritable price = new DoubleWritable();
-
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String[] fields = value.toString().split(";");
             if (fields.length == 10) {
                 String country = fields[0];  // País
                 String year = fields[1];     // Ano
-                double amount = 0;
+                Long price = Long.parseLong(fields[5]);
+                float amount;
 
                 try {
-                    amount = Double.parseDouble(fields[5]); // Valor da transação (Price)
+                    amount = Float.parseFloat(fields[8]); //amount
                 } catch (NumberFormatException e) {
                     // Ignora se o valor não puder ser convertido
                     return;
                 }
 
-                // Define a chave como CountryYearWritable
-                countryYear.setCountry(country);
-                countryYear.setYear(year);
-                price.set(amount);
-
-                // Emite (CountryYearWritable, valor da transação)
-                context.write(countryYear, price);
+                context.write(new CountryYearWritable(country,year), new PriceAmountWritable(price,amount));
             }
         }
     }
 
-    public static class TransactionReducer extends Reducer<CountryYearWritable, DoubleWritable, CountryYearWritable, Text> {
-        public void reduce(CountryYearWritable key, Iterable<DoubleWritable> values, Context context) throws IOException, InterruptedException {
-            double minTransaction = Double.MAX_VALUE;
-            double maxTransaction = Double.MIN_VALUE;
-
-            for (DoubleWritable val : values) {
-                double transactionValue = val.get();
-                if (transactionValue < minTransaction) {
-                    minTransaction = transactionValue;
+    public static class TransactionReducer extends Reducer<CountryYearWritable, PriceAmountWritable, CountryYearWritable, Text> {
+        public void reduce(CountryYearWritable key, Iterable<PriceAmountWritable> values, Context context) throws IOException, InterruptedException {
+            float minAmount = Float.MAX_VALUE;
+            float maxAmount = Float.MIN_VALUE;
+            Long priceMin = 0L;
+            Long priceMax = 0L;
+            for (PriceAmountWritable amt : values) {
+                float amount = amt.getAmount();
+                if (amount < minAmount) {
+                    minAmount = amount;
+                    priceMin = amt.getPrice();
                 }
-                if (transactionValue > maxTransaction) {
-                    maxTransaction = transactionValue;
+                if (amount > maxAmount) {
+                    maxAmount = amount;
+                    priceMax = amt.getPrice();
                 }
             }
 
             // Emite (CountryYearWritable, menor transação; maior transação)
-            context.write(key, new Text("Min: " + minTransaction + ", Max: " + maxTransaction));
+            context.write(key,new Text( "Minimal price" + priceMin + "Minimal amount: " + minAmount));
         }
     }
 }

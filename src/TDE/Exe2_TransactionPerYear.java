@@ -28,6 +28,10 @@ public class Exe2_TransactionPerYear {
             if (fields.length == 10) {
                 year.set(fields[1]);  // Campo que contém o ano (segunda coluna)
                 context.write(year, one);
+
+                // (2015,1)
+                // (1992,1)
+                // (2015,1)
             }
         }
     }

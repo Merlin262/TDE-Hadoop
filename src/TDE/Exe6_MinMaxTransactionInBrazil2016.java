@@ -34,6 +34,9 @@ public class Exe6_MinMaxTransactionInBrazil2016 {
         public void reduce(Text key, Iterable<DoubleWritable> values, Context context) throws IOException, InterruptedException {
             for (DoubleWritable val : values) {
                 double currentPrice = val.get();
+                // (Afghanistan;2016;010410;Sheep, live;Export;6088;2339;Number of items;51;01_live_animals , 55234)
+                    // (key,value)
+
                 if (currentPrice < minPrice) {
                     minPrice = currentPrice;
                     minTransaction.set(key);
