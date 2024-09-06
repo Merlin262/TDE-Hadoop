@@ -14,23 +14,31 @@ import java.io.IOException;
 public class Exe8_MinMaxTransactionByYearCountry {
 
     public static class TransactionMapper extends Mapper<LongWritable, Text, CountryYearWritable, PriceAmountWritable> {
-        private CountryYearWritable countryYear = new CountryYearWritable();
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String[] fields = value.toString().split(";");
-            if (fields.length == 10) {
-                String country = fields[0];  // País
-                String year = fields[1];     // Ano
-                Long price = Long.parseLong(fields[5]);
-                float amount;
 
-                try {
-                    amount = Float.parseFloat(fields[8]); //amount
-                } catch (NumberFormatException e) {
-                    // Ignora se o valor não puder ser convertido
-                    return;
+            if (fields.length > 0 && fields[0] != null && !fields[0].isEmpty()) {
+                char first = fields[0].charAt(0);
+                // Verifica se o primeiro caractere é uma letra maiúscula
+                if (Character.isUpperCase(first)) {
+                    String country = fields[0];  // País
+                    String year = fields[1];
+                    try {
+                        long price = Long.parseLong(fields[5]);
+                        float amount;
+                        amount = Float.parseFloat(fields[8]); //amount
+
+                        context.write(new CountryYearWritable(country, year), new PriceAmountWritable(price, amount));
+                    } catch (NumberFormatException e) {
+                        // Ignora se o valor não puder ser convertido
+                        return;
+                    }
                 }
 
-                context.write(new CountryYearWritable(country,year), new PriceAmountWritable(price,amount));
+
+
+
+
             }
         }
     }
@@ -54,7 +62,8 @@ public class Exe8_MinMaxTransactionByYearCountry {
             }
 
             // Emite (CountryYearWritable, menor transação; maior transação)
-            context.write(key,new Text( "Minimal price" + priceMin + "Minimal amount: " + minAmount));
+            context.write(key,new Text( "Min price: " + priceMin + " /  " + "Min amount: " + minAmount));
+            context.write(key,new Text( "Max price: " + priceMax   + " / " + "Max amount: " + maxAmount));
         }
     }
 }

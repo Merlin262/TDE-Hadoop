@@ -71,6 +71,6 @@ public class CountryYearWritable implements WritableComparable<CountryYearWritab
 
     @Override
     public String toString() {
-        return country + ";" + year;
+        return country + "," + year;
     }
 }
